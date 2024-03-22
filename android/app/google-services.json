@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "597509631660",
+    "project_id": "quran-backup-916e3",
+    "storage_bucket": "quran-backup-916e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597509631660:android:e1fde4b3afae37b1143909",
+        "android_client_info": {
+          "package_name": "com.example.quran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpPyVEdJzQlQrovJTveu36I5VBwwSmSxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
