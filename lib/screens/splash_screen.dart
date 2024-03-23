@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:equran/screens/main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'signin_screen.dart';
 import 'package:equran/constants/constants.dart';
@@ -12,14 +14,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  User? user;
   @override
   void initState() {
     super.initState();
+    user= FirebaseAuth.instance.currentUser;
     Timer(
       const Duration(seconds: 3), // Reduced the duration for testing
           () => Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SignInScreen()),
+        MaterialPageRoute(builder: (context) =>user!=null? const MainScreen(): const SignInScreen()),
       ),
     );
   }
