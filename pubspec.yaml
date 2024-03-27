@@ -60,7 +60,9 @@ dependencies:
   file_picker: ^6.1.1
   ffmpeg_kit_flutter: ^6.0.3
   flutter_sound: ^9.2.13
-
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -98,6 +100,7 @@ flutter:
     - assets/Koran.png
     - assets/quran (4) 3.png
     - assets/quran (2) 2.png
+    - assets/default_avatar.jpg
   # To add assets to your application, add an assets section, like this:
    #assets:
      #-assets/Bismillah.svg
