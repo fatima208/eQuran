@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:equran/screens/notification_screen.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'signin_screen.dart';
+import 'package:equran/constants/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class UserScreen extends StatefulWidget {
   const UserScreen({Key? key});
 
@@ -25,7 +28,15 @@ class _UserScreenState extends State<UserScreen> {
   void initState() {
     super.initState();
     _fetchUserData();
+    _getSavedProfilePicPath();
   }
+  Future<void> _getSavedProfilePicPath() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _profilePicPath = prefs.getString('profilePicPath') ?? "";
+    });
+  }
+
   Future<void> _fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -52,6 +63,8 @@ class _UserScreenState extends State<UserScreen> {
       setState(() {
         _profilePicPath = image.path;
       });
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('profilePicPath', _profilePicPath!);
 
     }
 
@@ -62,7 +75,31 @@ class _UserScreenState extends State<UserScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Center(
+        appBar: AppBar(
+          backgroundColor: Colors.brown,
+            elevation: 0,
+            title: const Text('UserPage',style: TextStyle(color: Colors.white,
+                fontSize: 20,fontWeight: FontWeight.bold),),
+
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(), // Navigate to NotificationScreen
+                  ),
+                );
+              },
+              icon: Icon(Icons.settings,color: Colors.white,),
+            ),
+          ],
+        ),
+        body: Container(
+    decoration: BoxDecoration(
+    color: Constants.kPrimary,
+    ),
+    child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -82,7 +119,7 @@ class _UserScreenState extends State<UserScreen> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              Text('$_userEmail'),
+              Text('$_userEmail',),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -100,7 +137,13 @@ class _UserScreenState extends State<UserScreen> {
                     ));
                   });
                 },
-                child: Text('Change Password'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.brown),
+                ),
+                child: Text(
+                  'Change Password',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -117,11 +160,17 @@ class _UserScreenState extends State<UserScreen> {
                     print('Error signing out: $e');
                   }
                 },
-                child: Text('Sign Out'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.brown),
+                ),
+                child: Text(
+                  'Sign Out',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
-        ),
+        ),),
       ),
     );
   }
