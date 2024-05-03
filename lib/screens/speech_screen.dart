@@ -10,6 +10,7 @@ class SpeechScreen extends StatefulWidget {
 
 class _SpeechScreenState extends State<SpeechScreen> {
   int selectedSurahNumber = 0;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,24 +37,64 @@ class _SpeechScreenState extends State<SpeechScreen> {
         ),
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32.0),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                      icon: _searchController.text.isEmpty ? Icon(Icons.search) : Icon(Icons.clear),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: totalSurahCount,
                 itemBuilder: (context, index) {
                   int surahNumber = index + 1;
+                  String surahName = getSurahName(surahNumber);
+                  String surahNameArabic = getSurahNameArabic(surahNumber);
+                  // Filter surahs based on search query
+                  if (_searchController.text.isNotEmpty &&
+                      !surahName.toLowerCase().contains(_searchController.text.toLowerCase())) {
+                    return SizedBox(); // Hide the ListTile if it doesn't match the search query
+                  }
                   return ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          getSurahName(surahNumber),
+                          surahName,
                           style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
-                        ), // Display Surah name in English
+                        ),
                         Text(
-                          getSurahNameArabic(surahNumber),
+                          surahNameArabic,
                           style: TextStyle(fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.right,
-                        ), // Display Surah name in Arabic
+                        ),
                       ],
                     ),
                     onTap: () {
