@@ -91,6 +91,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 20,
                 ),
                 FirebaseButton(context, "SignUp", () {
+                  if (_userNameTextController.text.isEmpty ||
+                      _emailTextController.text.isEmpty ||
+                      _passwordTextController.text.isEmpty) {
+                    setState(() {
+                      _message = "Please fill in all fields.";
+                    });
+                    return; // Exit function if any field is empty
+                  }
+
                   FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                     email: _emailTextController.text,

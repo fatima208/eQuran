@@ -64,7 +64,13 @@ dependencies:
   firebase_storage: ^11.6.0
   image_picker: ^1.0.7
   flutter_local_notifications: ^9.1.5
+  flutter_launcher_icons: ^0.13.1
 
+flutter_icons:
+  android: true
+  image_path: "assets/Icon.jpeg"
+  adaptive_icon_background: "#e3cfa8"
+  adaptive_icon_foreground: "assets/Icon_Front.png"
 
 dev_dependencies:
   flutter_test:
@@ -103,6 +109,7 @@ flutter:
     - assets/quran (4) 3.png
     - assets/quran (2) 2.png
     - assets/default_avatar.jpg
+    - assets/Icon.jpeg
   # To add assets to your application, add an assets section, like this:
    #assets:
      #-assets/Bismillah.svg
