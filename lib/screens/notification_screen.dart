@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationScreen extends StatefulWidget {
@@ -12,11 +13,13 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
+  bool _notificationsEnabled = false;
 
   @override
   void initState() {
     super.initState();
     initializeNotifications();
+    _loadUserPreference();
   }
 
   Future<void> initializeNotifications() async {
@@ -26,9 +29,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final IOSInitializationSettings initializationSettingsIOS =
     IOSInitializationSettings();
 
-    final InitializationSettings initializationSettings =
-    InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    final InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
@@ -38,7 +41,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
     AndroidNotificationDetails(
       'your_channel_id', // id
       'your_channel_name', // name
-
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
@@ -60,11 +62,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Future<void> _toggleNotifications(bool value) async {
+    setState(() {
+      _notificationsEnabled = value;
+    });
+
     if (value) {
       await _scheduleNotification();
     } else {
       await flutterLocalNotificationsPlugin.cancelAll();
     }
+
+    _saveUserPreference(value);
+  }
+
+  Future<void> _loadUserPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = prefs.getBool('notificationsEnabled') ?? false;
+    });
+  }
+
+  Future<void> _saveUserPreference(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notificationsEnabled', value);
   }
 
   @override
@@ -100,13 +120,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             SizedBox(height: 20),
             Switch(
-              value: true, // Toggle notifications on/off
+              value: _notificationsEnabled, // Reflect the saved preference
               onChanged: _toggleNotifications,
             ),
           ],
         ),
       ),
     );
-
   }
 }
