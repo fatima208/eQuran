@@ -90,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                FirebaseButton(context, "SignUp", () {
+                FirebaseButton(context, "SignUp", () async {
                   if (_userNameTextController.text.isEmpty ||
                       _emailTextController.text.isEmpty ||
                       _passwordTextController.text.isEmpty) {
@@ -100,6 +100,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     return; // Exit function if any field is empty
                   }
 
+                  // Check if the username or email already exists in Firestore
+                  QuerySnapshot usernameSnapshot = await FirebaseFirestore.instance
+                      .collection('Quran')
+                      .where('name', isEqualTo: _userNameTextController.text)
+                      .get();
+
+                  QuerySnapshot emailSnapshot = await FirebaseFirestore.instance
+                      .collection('Quran')
+                      .where('Email', isEqualTo: _emailTextController.text)
+                      .get();
+
+                  // If any document exists with the same username or email, display a message
+                  if (usernameSnapshot.docs.isNotEmpty || emailSnapshot.docs.isNotEmpty) {
+                    setState(() {
+                      _message = "Username or Email already exists.";
+                    });
+                    return; // Exit function if username or email already exists
+                  }
+
+                  // If no document exists with the same username or email, create the account
                   FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                     email: _emailTextController.text,
@@ -127,6 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     print("Error${error.toString()}");
                   });
                 }),
+
                 const SizedBox(
                   height: 20,
                 ),
@@ -146,7 +167,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> saveUsernameToFirestore(String uid) async {
     try {
-      await FirebaseFirestore.instance.collection('Quran').doc('Account').set({
+      // Check if the username already exists in Firestore
+      QuerySnapshot usernameSnapshot = await FirebaseFirestore.instance
+          .collection('Quran')
+          .where('name', isEqualTo: _userNameTextController.text)
+          .get();
+
+      // Check if the email already exists in Firestore
+      QuerySnapshot emailSnapshot = await FirebaseFirestore.instance
+          .collection('Quran')
+          .where('Email', isEqualTo: _emailTextController.text)
+          .get();
+
+      // If any document exists with the same username or email, display a message
+      if (usernameSnapshot.docs.isNotEmpty || emailSnapshot.docs.isNotEmpty) {
+        setState(() {
+          _message = "Username or email already exists.";
+        });
+        return;
+      }
+
+      // If no document exists with the same username or email, save the new data
+      await FirebaseFirestore.instance.collection('Quran').doc(uid).set({
         'name': _userNameTextController.text,
         'Email': _emailTextController.text,
       });
@@ -155,4 +197,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print("Error saving username: $e");
     }
   }
+
 }

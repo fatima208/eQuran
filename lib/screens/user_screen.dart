@@ -41,20 +41,23 @@ class _UserScreenState extends State<UserScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userEmail = user.email;
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('Quran')
-          .where('Email', isEqualTo: userEmail)
-          .get();
+      final querySnapshot =
+      await FirebaseFirestore.instance.collection('Quran').get();
       if (querySnapshot.docs.isNotEmpty) {
-        final userData = querySnapshot.docs.first.data();
-        setState(() {
-          _userName = userData['name'];
-          _userEmail = userData['Email'];
-
-        });
+        for (var doc in querySnapshot.docs) {
+          final userData = doc.data();
+          if (userData['Email'] == userEmail) {
+            setState(() {
+              _userName = userData['name'];
+              _userEmail = userData['Email'];
+            });
+            break; // Exit loop once user data is found
+          }
+        }
       }
     }
   }
+
 
 
   Future<void> _changeProfilePic() async {
